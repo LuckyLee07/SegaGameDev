@@ -193,9 +193,7 @@ void GameObj::update(char input)
 	case 'w': dy = -1; break;
 	case 'z': dy = 1; break;
 	}
-	// 无变化 直接返回
-	if (dx == 0 && dy == 0) return;
-
+	
 	int x, y; // 查找玩家位置
 	bool found = false;
 	for (y = 0; y < m_height; ++y)
@@ -260,8 +258,14 @@ bool GameObj::checkClear()
 	return true;
 }
 
+void mainLoop();
+GameObj* gState = NULL;
+
 namespace GameLib {
 	void Framework::update() {
+		//mainLoop();
+		std::cout << "a:left  s:right w:up z:down. command?" << std::endl;
+		/*
 		unsigned* vram = videoMemory();
 		int iwidth = width();
 		for (int i = 100; i <= 200; ++i)
@@ -271,34 +275,45 @@ namespace GameLib {
 				vram[j * iwidth + i] = 0xff0000;
 			}
 		}
+		*/
 	}
 }
 
-int main()
+void mainLoop()
 {
-	int filesize = 0;
-	const char* filepath = "stateData.txt";
-	const char* data = readFile(filepath, filesize);
-
-	GameObj* gState = new GameObj(data, filesize);
-
-	while (true)
+	if (gState == NULL)
 	{
-		gState->draw();
-		if (gState->checkClear())
-		{
-			break;
-		}
-		std::cout << "a:left  s:right w:up z:down. command?" << std::endl;
-		char input;
-		std::cin >> input;
+		int filesize = 0;
+		const char* filepath = "stateData.txt";
+		const char* buffer = readFile(filepath, filesize);
 
-		gState->update(input);
+		if (buffer == NULL) return;
+		
+		gState = new GameObj(buffer, filesize);
+		delete[] buffer;
+		buffer = NULL;
+
+		gState->draw();
 	}
 
-	std::cout << "Congraturation's! you win." << std::endl;
-	delete gState;
-	gState = NULL;
+	// 主循环通关检测
+	bool needClear = false;
+	if (gState->checkClear())
+		needClear = true;
 
-	return 0;
+	// 获取输入并刷新
+	std::cout << "a:left  s:right w:up z:down. command?" << std::endl;
+	char input;
+	std::cin >> input;
+	gState->update(input);
+
+	// 绘制
+	gState->draw();
+
+	if (needClear)
+	{
+		std::cout << "Congraturation's! you win." << std::endl;
+		delete gState;
+		gState = NULL;
+	}
 }

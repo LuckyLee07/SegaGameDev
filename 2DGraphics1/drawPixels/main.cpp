@@ -5,7 +5,7 @@ namespace GameLib {
 		unsigned* vram = videoMemory();
 		static unsigned i;
 		vram[i] += i * 100;
-		i += 9973; //小于1万的最大的质数
+		i += 9973; //灏忎簬1涓囩殑鏈�澶х殑璐ㄦ暟
 		i %= (width() * height());
 	}
 }
