@@ -5,6 +5,22 @@
 #include <algorithm>
 #include "GameLib/Framework.h"
 
+using namespace GameLib;
+
+void drawCell(int x, int y, unsigned color)
+{
+	int windowWidth = Framework::instance().width();
+	unsigned* vram = Framework::instance().videoMemory();
+
+	for (int i = 0; i < 16; ++i)
+	{
+		for (int j = 0; j < 16; ++j)
+		{
+			vram[(y * 16 + i) * windowWidth + (x * 16 + j)] = color;
+		}
+	}
+}
+
 char* readFile(const char* fileName, int& fileSize)
 {
 	char cwd[MAX_PATH]; //获取当前工作目录
@@ -171,15 +187,18 @@ void GameObj::init(const char* stageData, int dataSize)
 
 void GameObj::draw()
 {
-	const char font[] = { ' ', '#', '.', 'o', 'O', 'p', 'P' };
+	unsigned* vram = Framework::instance().videoMemory();
+	int windowWidth = Framework::instance().width();
+
+	unsigned font[] = { 0x000000, 0xffffff, 0x0000ff, 0xff0000, 0xff00ff, 0x00ff00, 0x00ffff };
+	
 	for (int y = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x)
 		{
-			int o = m_states(x, y);
-			std::cout << font[o];
+			unsigned color = font[m_states(x, y)];
+			drawCell(x, y, color);
 		}
-		std::cout << std::endl;
 	}
 }
 
@@ -193,6 +212,9 @@ void GameObj::update(char input)
 	case 'w': dy = -1; break;
 	case 'z': dy = 1; break;
 	}
+
+	if (dx == 0 && dy == 0)
+		return;
 	
 	int x, y; // 查找玩家位置
 	bool found = false;
@@ -263,19 +285,7 @@ GameObj* gState = NULL;
 
 namespace GameLib {
 	void Framework::update() {
-		//mainLoop();
-		std::cout << "a:left  s:right w:up z:down. command?" << std::endl;
-		/*
-		unsigned* vram = videoMemory();
-		int iwidth = width();
-		for (int i = 100; i <= 200; ++i)
-		{
-			for (int j = 0; j <= 200; ++j)
-			{
-				vram[j * iwidth + i] = 0xff0000;
-			}
-		}
-		*/
+		mainLoop();
 	}
 }
 
