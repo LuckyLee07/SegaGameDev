@@ -57,8 +57,11 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int w, int h) const
 	{
 		for (int x = 0; x < w; ++x)
 		{
+			int srcpos = (y + srcY) * m_width + (x + srcX);
 			int dstpos = (y + dstY) * winWidth + (x + dstX);
-			vram[dstpos] = m_data[(y + srcY) * m_width + (x + srcX)];
+			int alpha = (m_data[srcpos] & 0xff000000) >> 24;
+			if (alpha >= 128) // alpha通道 
+				vram[dstpos] = m_data[srcpos];
 		}
 	}
 }

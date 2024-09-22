@@ -22,7 +22,7 @@ State::State(const char* stageData, int dataSize)
 	}
 	this->initData(stageData, dataSize);
 
-	m_image = new Image("nimotsuKunImage.dds");
+	m_image = new Image("assets/nimotsuKunImage2.dds");
 }
 
 void State::setSize(const char* stageData, int dataSize)
@@ -100,18 +100,34 @@ void State::draw()
 {
 	const char fonts[] = { ' ', '#', 'o', 'p', '.', '#', 'O', 'P' };
 	const unsigned colors[] = { 0x000000, 0xffffff, 0xff0000, 0x00ff00, 0x0000ff, 0xffffff, 0xff00ff, 0x00ffff };
-	const ImageID imageIds[] = { IMAGE_ID_SPACE , IMAGE_ID_WALL , IMAGE_ID_BLOCK , IMAGE_ID_PLAYER,
-								 IMAGE_ID_GOAL, IMAGE_ID_WALL, IMAGE_ID_BLOCK_ON_GOAL, IMAGE_ID_PLAYER };
 	for (int y = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x)
 		{
-			int index = m_states(x, y);
-			if (m_goalFlags(x, y)) index += 4;
-			
-			std::cout << fonts[index];
+			Object o = m_states(x, y);
+			bool goalFlag = m_goalFlags(x, y);
+
+			int index = static_cast<int>(o);
+			if (goalFlag) index += 4;
+			//std::cout << fonts[index];
 			//drawCell(x, y, colors[index]);
-			drawCell(x, y, imageIds[index]);
+			
+			if (o != OBJ_WALL)
+			{
+				if (goalFlag)
+					drawCell(x, y, IMAGE_ID_GOAL);
+				else
+					drawCell(x, y, IMAGE_ID_SPACE);
+			}
+			ImageID id = IMAGE_ID_SPACE;
+			switch (o)
+			{
+			case OBJ_WALL: id = IMAGE_ID_WALL; break;
+			case OBJ_BLOCK: id = IMAGE_ID_BLOCK; break;
+			case OBJ_MAN: id = IMAGE_ID_PLAYER; break;
+			}
+			if (id != IMAGE_ID_SPACE)
+				drawCell(x, y, id);
 		}
 		std::cout << std::endl;
 	}
@@ -133,7 +149,8 @@ void State::drawCell(int x, int y, unsigned color)
 
 void State::drawCell(int x, int y, ImageID imageId)
 {
-	m_image->draw(x*32, y*32, imageId*32, 0, 32, 32);
+	int blockw = 32, blockh = 32; //块大小
+	m_image->draw(x * blockw, y * blockh, imageId * blockw, 0, blockw, blockh);
 }
 
 void State::update(char input)

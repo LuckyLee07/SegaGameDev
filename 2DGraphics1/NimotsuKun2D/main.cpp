@@ -24,7 +24,7 @@ void mainLoop()
 {
 	if (gState == NULL)
 	{
-		File file("stageData.txt");
+		File file("assets/stageData.txt");
 		gState = new State(file.data(), file.size());
 
 		gState->draw();
