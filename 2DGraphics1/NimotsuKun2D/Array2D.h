@@ -12,7 +12,7 @@ public:
 	Array2D(int rows, int cols) :
 		m_rows(rows), m_cols(cols)
 	{
-		m_data = new int[rows * cols];
+		m_data = new T[rows * cols];
 	}
 	~Array2D()
 	{
@@ -23,13 +23,13 @@ public:
 	{
 		m_rows = rows;
 		m_cols = cols;
-		m_data = new int[rows * cols];
+		m_data = new T[rows * cols];
 	}
-	int& operator()(int row, int col)
+	T& operator()(int row, int col)
 	{
 		return m_data[row * m_cols + col];
 	}
-	const int& operator()(int row, int col) const
+	const T& operator()(int row, int col) const
 	{
 		return m_data[row * m_cols + col];
 	}

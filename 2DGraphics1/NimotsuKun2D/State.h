@@ -22,18 +22,26 @@ private:
 	{
 		OBJ_SPACE,
 		OBJ_WALL,
-		OBJ_GOAL,
 		OBJ_BLOCK,
-		OBJ_BLOCK_ON_GOAL,
 		OBJ_MAN,
-		OBJ_MAN_ON_GOAL,
 
 		OBJ_UNKNOWN,
+	};
+	// 网格绘制ID
+	enum ImageID
+	{
+		IMAGE_ID_PLAYER,
+		IMAGE_ID_WALL,
+		IMAGE_ID_BLOCK,
+		IMAGE_ID_BLOCK_ON_GOAL,
+		IMAGE_ID_GOAL,
+		IMAGE_ID_SPACE,
 	};
 
 	int m_width;
 	int m_height;
-	Array2D<int> m_states;
+	Array2D<Object> m_states;
+	Array2D<bool> m_goalFlags;
 };
 
 #endif  // __STATE_H__

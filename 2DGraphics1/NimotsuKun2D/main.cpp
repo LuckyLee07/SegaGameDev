@@ -12,6 +12,15 @@ namespace GameLib {
 	}
 }
 
+int main()
+{
+	while (true)
+	{
+		mainLoop();
+	}
+	return 0;
+}
+
 void mainLoop()
 {
 	if (gState == NULL)
@@ -27,14 +36,17 @@ void mainLoop()
 	if (gState->checkClear())
 		needClear = true;
 
-	// 获取输入并刷新
-	std::cout << "a:left  s:right w:up z:down. command?" << std::endl;
-	char input;
-	std::cin >> input;
-	gState->update(input);
+	if (!needClear)
+	{
+		// 获取输入并刷新
+		std::cout << "a:left  s:right w:up z:down. command?" << std::endl;
+		char input;
+		std::cin >> input;
+		gState->update(input);
 
-	// 绘制
-	gState->draw();
+		// 绘制
+		gState->draw();
+	}
 
 	if (needClear)
 	{

@@ -31,9 +31,19 @@ void drawImage(const char* filePath)
 	int srcY = gImage->height() * 0.5f - 40;
 
 	int dstX = 100, dstY = 100;
-	gImage->draw();
-	gImage->draw(dstX, dstY);
-	//gImage->draw(dstX, dstY, srcX, srcY, width, height);
+	//gImage->draw();
+	//gImage->draw(dstX, dstY);
+
+	Framework& instance = Framework::instance();
+	int xp = instance.width() / width;
+	int yp = instance.height() / height;
+	for (int y = 0; y < yp; ++y)
+	{
+		for (int x = 0; x < xp; ++x)
+		{
+			gImage->draw(x * width, y * height, srcX, srcY, width, height);
+		}
+	}
 }
 
 namespace GameLib {
