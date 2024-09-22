@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <windows.h>
 #include "Image.h"
 #include "GameLib/Framework.h"
 
@@ -55,12 +57,35 @@ void drawImageBlendTest()
 		gImage1 = new Image("assets/forground.dds");
 		gImage2 = new Image("assets/background.dds");
 	}
+	unsigned* vram = Framework::instance().videoMemory();
+	int ww = Framework::instance().width();
+	int wh = Framework::instance().height();
+	for (int i = 0; i < ww * wh; ++i) {
+		vram[i] = 0; //用黑色填充屏幕
+	}
 	gImage2->draw();
 	gImage1->draw();
 }
 
+// 自定义缓冲区，将输出重定向到 Visual Studio 的调试输出窗口
+class DebugStreamBuffer : public std::streambuf {
+protected:
+	virtual int overflow(int c = EOF) override {
+		if (c != EOF) {
+			char buffer[] = { static_cast<char>(c), '\0' };
+			OutputDebugStringA(buffer);  // 将字符输出到 VS 调试窗口
+		}
+		return c;
+	}
+};
+
+static bool g_Init = false;
 namespace GameLib {
 	void Framework::update() {
+		// 创建一个 DebugStreamBuffer 实例并将其绑定到 std::cout
+		DebugStreamBuffer debugBuffer;
+		std::cout.rdbuf(&debugBuffer);  // 将 std::cout 重定向到自定义缓冲区
+
 		//drawPixels();
 		//drawImage("bar.dds");
 		drawImageBlendTest();
