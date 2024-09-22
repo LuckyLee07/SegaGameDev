@@ -11,7 +11,7 @@ public:
 	State(const char* stageData, int dataSize);
 
 	void draw();
-	void update(char input);
+	void update(int dx, int dy);
 	bool checkClear();
 
 private:

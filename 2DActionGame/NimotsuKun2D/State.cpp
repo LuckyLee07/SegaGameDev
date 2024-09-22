@@ -153,17 +153,8 @@ void State::drawCell(int x, int y, ImageID imageId)
 	m_image->draw(x * blockw, y * blockh, imageId * blockw, 0, blockw, blockh);
 }
 
-void State::update(char input)
+void State::update(int dx, int dy)
 {
-	int dx = 0, dy = 0;
-	switch (input)
-	{
-	case 'a': dx = -1; break;
-	case 's': dx = 1; break;
-	case 'w': dy = -1; break;
-	case 'z': dy = 1; break;
-	}
-
 	if (dx == 0 && dy == 0)
 		return;
 
