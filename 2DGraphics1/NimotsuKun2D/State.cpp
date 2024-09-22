@@ -1,6 +1,7 @@
 #include "State.h"
 #include <iostream>
 #include <algorithm>
+#include "Image.h"
 #include "GameLib/Framework.h"
 
 using namespace GameLib;
@@ -20,6 +21,8 @@ State::State(const char* stageData, int dataSize)
 		}
 	}
 	this->initData(stageData, dataSize);
+
+	m_image = new Image("nimotsuKunImage.dds");
 }
 
 void State::setSize(const char* stageData, int dataSize)
@@ -95,29 +98,20 @@ void State::initData(const char* stageData, int dataSize)
 
 void State::draw()
 {
-	const char fonts[] = { ' ', '#', 'o', 'p' };
-	const char goalfonts[] = { '.', '#', 'O', 'P' };
-
-	const unsigned colors[] = { 0x000000, 0xffffff, 0xff0000, 0x00ff00 };
-	const unsigned goalcolors[] = { 0x0000ff, 0xffffff, 0xff00ff, 0x00ffff };
-
+	const char fonts[] = { ' ', '#', 'o', 'p', '.', '#', 'O', 'P' };
+	const unsigned colors[] = { 0x000000, 0xffffff, 0xff0000, 0x00ff00, 0x0000ff, 0xffffff, 0xff00ff, 0x00ffff };
+	const ImageID imageIds[] = { IMAGE_ID_SPACE , IMAGE_ID_WALL , IMAGE_ID_BLOCK , IMAGE_ID_PLAYER,
+								 IMAGE_ID_GOAL, IMAGE_ID_WALL, IMAGE_ID_BLOCK_ON_GOAL, IMAGE_ID_PLAYER };
 	for (int y = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x)
 		{
-			Object o = m_states(x, y);
-			char font;
-			unsigned color;
-			if (m_goalFlags(x, y))
-			{
-				font = goalfonts[o]; color = goalcolors[o];
-			}
-			else
-			{
-				font = fonts[o]; color = colors[o];
-			}
-			std::cout << font;
-			//drawCell(x, y, color);
+			int index = m_states(x, y);
+			if (m_goalFlags(x, y)) index += 4;
+			
+			std::cout << fonts[index];
+			//drawCell(x, y, colors[index]);
+			drawCell(x, y, imageIds[index]);
 		}
 		std::cout << std::endl;
 	}
@@ -135,6 +129,11 @@ void State::drawCell(int x, int y, unsigned color)
 			vram[(y * 16 + i) * windowWidth + (x * 16 + j)] = color;
 		}
 	}
+}
+
+void State::drawCell(int x, int y, ImageID imageId)
+{
+	m_image->draw(x*32, y*32, imageId*32, 0, 32, 32);
 }
 
 void State::update(char input)

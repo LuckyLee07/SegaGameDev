@@ -7,7 +7,7 @@ File::File(const char* fileName) : m_size(0), m_data(NULL)
 {
 	char cwd[MAX_PATH]; //获取当前工作目录
 	if (GetCurrentDirectoryA(MAX_PATH, cwd)) {
-		std::cout << "Current working directory: " << cwd << std::endl;
+		std::cout << "FilePath: " << cwd << "\\" << fileName << std::endl;
 	}
 
 	std::ifstream inputFile(fileName, std::ifstream::binary);

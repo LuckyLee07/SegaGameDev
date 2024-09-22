@@ -41,20 +41,8 @@ const unsigned* Image::data() const
 
 void Image::draw(int dstX, int dstY) const
 {
-	Framework& instance = Framework::instance();
-	unsigned* vram = instance.videoMemory();
-
-	int winWidth = instance.width();
-	int winHeight = instance.height();
-
-	for (int y = 0; y < m_height; ++y)
-	{
-		for (int x = 0; x < m_width; ++x)
-		{
-			int pos = (y + dstY) * winWidth + (x + dstX);
-			vram[pos] = m_data[y * m_width + x];
-		}
-	}
+	int srcX = 0, srcY = 0;
+	draw(dstX, dstY, srcX, srcY, m_width, m_height);
 }
 
 void Image::draw(int dstX, int dstY, int srcX, int srcY, int w, int h) const
@@ -64,17 +52,16 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int w, int h) const
 
 	int winWidth = instance.width();
 	int winHeight = instance.height();
-	
-	//int dstX = 100, dstY = 100;
-	//int srcX = imgWidth * 0.5f - 24;
-	//int srcY = imgHeight * 0.5f - 40;
 
 	for (int y = 0; y < h; ++y)
 	{
 		for (int x = 0; x < w; ++x)
 		{
+			int srcpos = (y + srcY) * m_width + (x + srcX);
 			int dstpos = (y + dstY) * winWidth + (x + dstX);
-			vram[dstpos] = m_data[(y + srcY) * m_width + (x + srcX)];
+			int alpha = (m_data[srcpos] & 0xff000000) >> 24;
+			if (alpha >= 128)
+				vram[dstpos] = m_data[srcpos];
 		}
 	}
 }

@@ -46,9 +46,23 @@ void drawImage(const char* filePath)
 	}
 }
 
+void drawImageBlendTest()
+{
+	static Image* gImage1 = NULL;
+	static Image* gImage2 = NULL;
+	if (gImage1 == NULL || gImage2 == NULL)
+	{
+		gImage1 = new Image("assets/forground.dds");
+		gImage2 = new Image("assets/background.dds");
+	}
+	gImage2->draw();
+	gImage1->draw();
+}
+
 namespace GameLib {
 	void Framework::update() {
 		//drawPixels();
-		drawImage("bar.dds");
+		//drawImage("bar.dds");
+		drawImageBlendTest();
 	}
 }

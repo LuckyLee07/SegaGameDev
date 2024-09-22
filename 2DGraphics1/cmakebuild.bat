@@ -20,4 +20,4 @@ cd ..
 echo build completed
 endlocal
 
-pause
+rem pause

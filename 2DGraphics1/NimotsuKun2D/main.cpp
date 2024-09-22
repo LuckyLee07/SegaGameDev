@@ -15,9 +15,8 @@ namespace GameLib {
 int main()
 {
 	while (true)
-	{
 		mainLoop();
-	}
+
 	return 0;
 }
 
@@ -25,7 +24,7 @@ void mainLoop()
 {
 	if (gState == NULL)
 	{
-		File file("stateData.txt");
+		File file("stageData.txt");
 		gState = new State(file.data(), file.size());
 
 		gState->draw();
