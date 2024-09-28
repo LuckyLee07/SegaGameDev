@@ -11,9 +11,9 @@ public:
 	State(const char* stageData, int dataSize);
 
 	void draw() const;
-	void update(int dx, int dy);
+	void update(int dx, int dy, int dt);
 	bool hasCleared() const;
-
+	
 private:
 	class Object; //声明
 	void setSize(const char* stageData, int dataSize);

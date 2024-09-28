@@ -6,6 +6,8 @@
 
 using namespace GameLib;
 
+const int MAX_MOVE_COUNT = 300; //0.3秒
+
 class State::Object
 {
 public:
@@ -93,8 +95,11 @@ void State::Object::drawForeground(int x, int y, const Image* image, int moveCou
 	if (id != IMAGE_ID_SPACE)
 	{
 		int blockw = 32, blockh = 32; //图片块大小
-		int posx = x * blockw - m_moveX * (blockw-moveCount);
-		int posy = y * blockh - m_moveY * (blockh-moveCount);
+		int m = MAX_MOVE_COUNT;
+		int posx = x * blockw - m_moveX * (m-moveCount) * blockw /m;
+		int posy = y * blockh - m_moveY * (m-moveCount) * blockh /m;
+		if (m_moveX != 0 || m_moveY != 0)
+			cout << "draw ===>>" << posx << ":" << posy << endl;
 		image->draw(posx, posy, id * blockw, 0, blockw, blockh);
 	}
 }
@@ -212,14 +217,13 @@ void State::drawCell(int x, int y, unsigned color) const
 }
 */
 
-void State::update(int dx, int dy)
+void State::update(int dx, int dy, int dt)
 {
 	if (dx == 0 && dy == 0 && m_movetCount == 0)
 		return;
 
-
-	// 移动计数值达到32后
-	if (m_movetCount == 32)
+	// 移动计数值达到 MAX 后
+	if (m_movetCount >= MAX_MOVE_COUNT)
 	{
 		m_movetCount = 0;
 		for (int y = 0; y < m_height; ++y)
@@ -234,7 +238,9 @@ void State::update(int dx, int dy)
 	// 移动过程中忽略更新
 	if (m_movetCount > 0)
 	{
-		++m_movetCount;
+		m_movetCount += dt;
+		if (m_movetCount > MAX_MOVE_COUNT)
+			m_movetCount = MAX_MOVE_COUNT;
 		return;
 	}
 
