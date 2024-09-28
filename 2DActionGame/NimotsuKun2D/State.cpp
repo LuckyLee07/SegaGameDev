@@ -6,20 +6,111 @@
 
 using namespace GameLib;
 
+class State::Object
+{
+public:
+	enum Type
+	{
+		OBJ_SPACE,
+		OBJ_WALL,
+		OBJ_BLOCK,
+		OBJ_MAN,
+
+		OBJ_UNKNOWN,
+	};
+	// 网格绘制ID
+	enum ImageID
+	{
+		IMAGE_ID_PLAYER,
+		IMAGE_ID_WALL,
+		IMAGE_ID_BLOCK,
+		IMAGE_ID_GOAL,
+		IMAGE_ID_SPACE,
+	};
+
+	Object(Type type= OBJ_BLOCK, bool goal=false);
+	void set(char c);
+	void move(int dx, int dy, Type repType);
+	void drawBackground(int x, int y, const Image* image);
+	void drawForeground(int x, int y, const Image* image, int moveCount);
+	bool isBlock() const;
+	
+	Type m_type;
+	bool m_goalFlag;
+	int m_moveX;
+	int m_moveY;
+};
+
+State::Object::Object(Type type, bool goal):
+	m_type(type), m_goalFlag(goal), m_moveX(0), m_moveY(0)
+{
+}
+void State::Object::set(char c)
+{
+	switch (c)
+	{
+	case '#': m_type = OBJ_WALL; break;
+	case ' ': m_type = OBJ_SPACE; break;
+	case '.': m_type = OBJ_SPACE; m_goalFlag = true; break;
+	case 'o': m_type = OBJ_BLOCK; break;
+	case 'O': m_type = OBJ_BLOCK; m_goalFlag = true; break;
+	case 'p': m_type = OBJ_MAN; break;
+	case 'P': m_type = OBJ_MAN; m_goalFlag = true; break;
+	}
+}
+void State::Object::move(int dx, int dy, Type repType)
+{
+	m_type = repType;
+	m_moveX = dx; m_moveY = dy;
+}
+void State::Object::drawBackground(int x, int y, const Image* image)
+{
+	ImageID id = IMAGE_ID_SPACE;
+	if (m_type == OBJ_WALL)
+	{
+		id = IMAGE_ID_WALL;
+	}
+	else if (m_goalFlag)
+	{
+		id = IMAGE_ID_GOAL;
+	}
+
+	int blockw = 32, blockh = 32;
+	int posx = x * blockw - m_moveX;
+	int posy = y * blockh - m_moveY;
+	image->draw(posx, posy, id * blockw, 0, blockw, blockh);
+}
+void State::Object::drawForeground(int x, int y, const Image* image, int moveCount)
+{
+	ImageID id = IMAGE_ID_SPACE;
+	if (m_type == OBJ_BLOCK)
+	{
+		id = IMAGE_ID_BLOCK;
+	}
+	else if (m_type == OBJ_MAN)
+	{
+		id = IMAGE_ID_PLAYER;
+	}
+	if (id != IMAGE_ID_SPACE)
+	{
+		int blockw = 32, blockh = 32; //图片块大小
+		int posx = x * blockw - m_moveX * (blockw-moveCount);
+		int posy = y * blockh - m_moveY * (blockh-moveCount);
+		image->draw(posx, posy, id * blockw, 0, blockw, blockh);
+	}
+}
+bool State::Object::isBlock() const
+{
+	return m_type == OBJ_BLOCK && !m_goalFlag;
+}
+
+
 State::State(const char* stageData, int dataSize)
+	: m_movetCount(0)
 {
 	setSize(stageData, dataSize);
-	m_states.init(m_width, m_height);
-	m_goalFlags.init(m_width, m_height);
+	m_objects.init(m_width, m_height);
 
-	for (int y = 0; y < m_height; ++y)
-	{
-		for (int x = 0; x < m_width; ++x)
-		{
-			m_states(x, y) = OBJ_BLOCK;
-			m_goalFlags(x, y) = false;
-		}
-	}
 	this->initData(stageData, dataSize);
 
 	m_image = new Image("assets/nimotsuKunImage2.dds");
@@ -35,7 +126,6 @@ void State::setSize(const char* stageData, int dataSize)
 	const char* d = stageData;
 	while (index < dataSize)
 	{
-		Object s;
 		switch (d[index])
 		{
 		case '#':
@@ -69,71 +159,46 @@ void State::initData(const char* stageData, int dataSize)
 	const char* d = stageData;
 	while (index < dataSize)
 	{
-		Object s;
-		bool goalFlag = false;
 		switch (d[index])
 		{
-		case '#': s = OBJ_WALL; break;
-		case ' ': s = OBJ_SPACE; break;
-		case '.': s = OBJ_SPACE; goalFlag = true; break;
-		case 'o': s = OBJ_BLOCK; break;
-		case 'O': s = OBJ_BLOCK; goalFlag = true; break;
-		case 'p': s = OBJ_MAN; break;
-		case 'P': s = OBJ_MAN; goalFlag = true; break;
+		case '#':
+		case ' ': case '.':
+		case 'o': case 'O':
+		case 'p': case 'P':
+			m_objects(x, y).set(d[index]);
+			x++; break;
 		case '\n': //换行处理
 			x = 0; ++y;
-			s = OBJ_UNKNOWN;
 			break;
-		default: s = OBJ_UNKNOWN; break;
 		}
 		++index;
-		if (s != OBJ_UNKNOWN)
-		{
-			m_states(x, y) = s;
-			m_goalFlags(x, y) = goalFlag;
-			++x;
-		}
 	}
 }
 
-void State::draw()
+void State::draw() const
 {
 	const char fonts[] = { ' ', '#', 'o', 'p', '.', '#', 'O', 'P' };
-	const unsigned colors[] = { 0x000000, 0xffffff, 0xff0000, 0x00ff00, 0x0000ff, 0xffffff, 0xff00ff, 0x00ffff };
+	// 先绘制背景
 	for (int y = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x)
 		{
-			Object o = m_states(x, y);
-			bool goalFlag = m_goalFlags(x, y);
-
-			int index = static_cast<int>(o);
-			if (goalFlag) index += 4;
-			//std::cout << fonts[index];
-			//drawCell(x, y, colors[index]);
-			
-			if (o != OBJ_WALL)
-			{
-				if (goalFlag)
-					drawCell(x, y, IMAGE_ID_GOAL);
-				else
-					drawCell(x, y, IMAGE_ID_SPACE);
-			}
-			ImageID id = IMAGE_ID_SPACE;
-			switch (o)
-			{
-			case OBJ_WALL: id = IMAGE_ID_WALL; break;
-			case OBJ_BLOCK: id = IMAGE_ID_BLOCK; break;
-			case OBJ_MAN: id = IMAGE_ID_PLAYER; break;
-			}
-			if (id != IMAGE_ID_SPACE)
-				drawCell(x, y, id);
+			Object obj = m_objects(x, y);
+			obj.drawBackground(x, y, m_image);
 		}
-		std::cout << std::endl;
+	}
+	// 其次绘制前景
+	for (int y = 0; y < m_height; ++y)
+	{
+		for (int x = 0; x < m_width; ++x)
+		{
+			Object obj = m_objects(x, y);
+			obj.drawForeground(x, y, m_image, m_movetCount);
+		}
 	}
 }
-
-void State::drawCell(int x, int y, unsigned color)
+/*
+void State::drawCell(int x, int y, unsigned color) const
 {
 	int windowWidth = Framework::instance().width();
 	unsigned* vram = Framework::instance().videoMemory();
@@ -146,17 +211,33 @@ void State::drawCell(int x, int y, unsigned color)
 		}
 	}
 }
-
-void State::drawCell(int x, int y, ImageID imageId)
-{
-	int blockw = 32, blockh = 32; //块大小
-	m_image->draw(x * blockw, y * blockh, imageId * blockw, 0, blockw, blockh);
-}
+*/
 
 void State::update(int dx, int dy)
 {
-	if (dx == 0 && dy == 0)
+	if (dx == 0 && dy == 0 && m_movetCount == 0)
 		return;
+
+
+	// 移动计数值达到32后
+	if (m_movetCount == 32)
+	{
+		m_movetCount = 0;
+		for (int y = 0; y < m_height; ++y)
+		{
+			for (int x = 0; x < m_width; ++x)
+			{
+				m_objects(x, y).m_moveX = 0;
+				m_objects(x, y).m_moveY = 0;
+			}
+		}
+	}
+	// 移动过程中忽略更新
+	if (m_movetCount > 0)
+	{
+		++m_movetCount;
+		return;
+	}
 
 	int x, y; // 查找玩家位置
 	bool found = false;
@@ -164,8 +245,8 @@ void State::update(int dx, int dy)
 	{
 		for (x = 0; x < m_width; ++x)
 		{
-			int state = m_states(x, y);
-			if (state == OBJ_MAN)
+			int state = m_objects(x, y).m_type;
+			if (state == Object::OBJ_MAN)
 			{
 				found = true; break;
 			}
@@ -179,13 +260,16 @@ void State::update(int dx, int dy)
 	if (tx < 0 || ty < 0 || tx >= m_width || ty >= m_height)
 		return;
 
-	int tps = m_states(tx, ty);
-	if (tps == OBJ_SPACE)
+	int tps = m_objects(tx, ty).m_type;
+	if (tps == Object::OBJ_SPACE)
 	{
-		m_states(tx, ty) = OBJ_MAN;
-		m_states(x, y) = OBJ_SPACE;
+		//m_objects(tx, ty).m_type = Object::OBJ_MAN;
+		//m_objects(x, y).m_type = Object::OBJ_SPACE;
+		m_objects(tx, ty).move(dx, dy, Object::OBJ_MAN);
+		m_objects(x, y).move(dx, dy, Object::OBJ_SPACE);
+		m_movetCount = 1; //移动开始
 	}
-	else if (tps == OBJ_BLOCK)
+	else if (tps == Object::OBJ_BLOCK)
 	{
 		// 检测沿该方向的第二个网格位置是否在允许范围内
 		int tx2 = tx + dx;
@@ -194,24 +278,30 @@ void State::update(int dx, int dy)
 		if (tx2 < 0 || ty2 < 0 || tx2 >= m_width || ty2 >= m_height)
 			return;
 
-		int tp2s = m_states(tx2, ty2); //沿该方向第二个网格位置
-		if (tp2s == OBJ_SPACE)
+		int tp2s = m_objects(tx2, ty2).m_type; //沿该方向第二个网格位置
+		if (tp2s == Object::OBJ_SPACE)
 		{
-			m_states(tx2, ty2) = OBJ_BLOCK;
-			m_states(tx, ty) = OBJ_MAN;
-			m_states(x, y) = OBJ_SPACE;
+			//m_objects(tx2, ty2).m_type = Object::OBJ_BLOCK;
+			//m_objects(tx, ty).m_type = Object::OBJ_MAN;
+			//m_objects(x, y).m_type = Object::OBJ_SPACE;
+			m_objects(tx2, ty2).move(dx, dy,Object::OBJ_BLOCK);
+			m_objects(tx, ty).move(dx, dy, Object::OBJ_MAN);
+			m_objects(x, y).move(dx, dy, Object::OBJ_SPACE);
+			m_movetCount = 1; //移动开始
 		}
 	}
 }
 
-bool State::checkClear()
+bool State::hasCleared() const
 {
+	if (m_movetCount > 0) return false;
+	
 	for (int y = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x)
 		{
-			int o = m_states(x, y);
-			if (OBJ_BLOCK == o && !m_goalFlags(x, y))
+			const Object& o = m_objects(x, y);
+			if (o.isBlock())
 			{
 				return false;
 			}

@@ -35,33 +35,33 @@ void mainLoop()
 
 	// 主循环通关检测
 	bool needClear = false;
-	if (gState->checkClear())
+	if (gState->hasCleared())
 		needClear = true;
 
 	if (!needClear)
 	{
 		// 获取输入
 		int dx = 0, dy = 0;
+		static bool sPrevW = false;
 		static bool sPrevA = false;
 		static bool sPrevS = false;
-		static bool sPrevW = false;
-		static bool sPrevZ = false;
+		static bool sPrevD = false;
+		bool inputW = f.isKeyOn('w');
 		bool inputA = f.isKeyOn('a');
 		bool inputS = f.isKeyOn('s');
-		bool inputW = f.isKeyOn('w');
-		bool inputZ = f.isKeyOn('z');
+		bool inputD = f.isKeyOn('d');
 		if (inputA && !sPrevA)
 			dx -= 1;
-		else if (inputS && !sPrevS)
+		else if (inputD && !sPrevD)
 			dx += 1;
 		else if (inputW && !sPrevW)
 			dy -= 1;
-		else if (inputZ && !sPrevZ)
+		else if (inputS && !sPrevS)
 			dy += 1;
+		sPrevW = inputW;
 		sPrevA = inputA;
 		sPrevS = inputS;
-		sPrevW = inputW;
-		sPrevZ = inputZ;
+		sPrevD = inputD;
 
 		// 更新
 		gState->update(dx, dy);
