@@ -76,8 +76,7 @@ void State::Object::drawBackground(int x, int y, const Image* image)
 	}
 
 	int blockw = 32, blockh = 32;
-	int posx = x * blockw - m_moveX;
-	int posy = y * blockh - m_moveY;
+	int posx = x * blockw, posy = y * blockh;
 	image->draw(posx, posy, id * blockw, 0, blockw, blockh);
 }
 void State::Object::drawForeground(int x, int y, const Image* image, int moveCount)

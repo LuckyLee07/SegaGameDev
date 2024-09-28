@@ -7,9 +7,35 @@ using namespace GameLib;
 
 void mainLoop();
 State* gState = NULL;
-
+const int gFrameInterval = 16; //16毫秒62.5fps。
+const unsigned TimeCnt = 10;
+unsigned gPrevTime[TimeCnt] = { 0 };
+unsigned gPrevDiffTime = 0;
 namespace GameLib {
 	void Framework::update() {
+		unsigned endTime = gPrevTime[TimeCnt - 1];
+		// unsigned 考虑溢出情况
+		while ((time() - endTime) < gFrameInterval)
+		{
+			sleep(1);
+		}
+
+		unsigned currTime = time();
+		unsigned frameTime10 = currTime - gPrevTime[0];
+		for (int i = 0; i < TimeCnt - 1; ++i)
+		{
+			gPrevTime[i] = gPrevTime[i + 1];
+		}
+		gPrevTime[TimeCnt - 1] = currTime;
+		gPrevDiffTime = frameTime10;
+
+		unsigned frameRate = 1000 * 10 / frameTime10; // 帧率计算
+		static unsigned sCounter = 0;
+		if (++sCounter % 60 == 0)
+		{
+			cout << "FPS: ===>>" << frameRate << endl;
+		}
+		
 		mainLoop();
 	}
 }
