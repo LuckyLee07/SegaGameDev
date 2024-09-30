@@ -34,14 +34,6 @@ public:
 	bool isKeyOn( int c ) const;
 	///输入（瞬间）
 	bool isKeyTriggered( int c ) const;
-	///随机数
-	int getRandom( int max = 0 );
-	//绘制字符
-	void drawDebugString( 
-		int column, //列（x）
-		int row, //行（y）
-		const char* string, 
-		unsigned color = 0xffffffff );
 
 	//以下库用户不需要知道
 	void start( void* windowHandle );

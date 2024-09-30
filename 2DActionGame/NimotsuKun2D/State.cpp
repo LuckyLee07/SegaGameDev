@@ -98,8 +98,8 @@ void State::Object::drawForeground(int x, int y, const Image* image, int moveCou
 		int m = MAX_MOVE_COUNT;
 		int posx = x * blockw - m_moveX * (m-moveCount) * blockw /m;
 		int posy = y * blockh - m_moveY * (m-moveCount) * blockh /m;
-		if (m_moveX != 0 || m_moveY != 0)
-			cout << "draw ===>>" << posx << ":" << posy << endl;
+		//if (m_moveX != 0 || m_moveY != 0)
+			//cout << "draw ===>>" << posx << ":" << posy << endl;
 		image->draw(posx, posy, id * blockw, 0, blockw, blockh);
 	}
 }
