@@ -58,7 +58,7 @@ void StringRender::draw(int x, int y, const char* str, unsigned color) const
 		t -= 32; // 从32开始
 		int srcX = (t % 16) * CHAR_WIDTH;
 		int srcY = (t / 16) * CHAR_HEIGHT;
-		m_pFontImage->draw(dstX, dstY, srcX, srcY, CHAR_WIDTH, CHAR_HEIGHT);
+		m_pFontImage->draw(dstX, dstY, srcX, srcY, CHAR_WIDTH, CHAR_HEIGHT, color);
 		dstX += CHAR_WIDTH; //移动到下个字符
 	}
 }

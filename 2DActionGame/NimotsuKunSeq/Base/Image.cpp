@@ -45,7 +45,7 @@ void Image::draw(int dstX, int dstY) const
 	draw(dstX, dstY, srcX, srcY, m_width, m_height);
 }
 
-void Image::draw(int dstX, int dstY, int srcX, int srcY, int w, int h) const
+void Image::draw(int dstX, int dstY, int srcX, int srcY, int w, int h, unsigned color) const
 {
 	Framework& instance = Framework::instance();
 	unsigned* vram = instance.videoMemory();
@@ -66,6 +66,7 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int w, int h) const
 			unsigned srcA = (scolor & 0xff000000) >> 24;
 			unsigned invAlpha = 255 - srcA; // 1 - alpha 的整数形式
 
+			if (color != 0) scolor = color; //如果传了值 则用传进来的
 			unsigned srcR = (scolor & 0x00ff0000) >> 16;
 			unsigned srcG = (scolor & 0x0000ff00) >> 8;
 			unsigned srcB = (scolor & 0x000000ff) >> 0;

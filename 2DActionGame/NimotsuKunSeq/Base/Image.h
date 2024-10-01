@@ -10,7 +10,7 @@ public:
 	int height() const;
 	const unsigned* data() const;
 	void draw(int dstX = 0, int dstY = 0) const;
-	void draw(int dstX, int dstY, int srcX, int srcY, int w, int d) const;
+	void draw(int dstX, int dstY, int srcX, int srcY, int w, int d, unsigned color = 0) const;
 private:
 	int m_width;
 	int m_height;

@@ -24,6 +24,6 @@ void Title::update(Parent* parent)
 	}
 	m_pImage->draw(); //绘制
 	// 输出文字
-	StringRender::instance()->draw(0, 0, "TITLE: NimotsuKun");
-	StringRender::instance()->draw(0, 1, "PRESS SPACE KEY");
+	StringRender::instance()->draw(0, 0, "TITLE: NimotsuKun", 0x00ffff);
+	StringRender::instance()->draw(0, 1, "PRESS SPACE KEY", 0xffff00);
 }
