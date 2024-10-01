@@ -1,7 +1,7 @@
 #ifndef __STATE_H__
 #define __STATE_H__
 
-#include "Array2D.h"
+#include "Base/Array2D.h"
 
 class Image;
 
