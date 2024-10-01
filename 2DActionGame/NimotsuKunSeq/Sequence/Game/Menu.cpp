@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "State.h"
 #include "Gamebase.h"
 #include "Base/Image.h"
 #include "GameLib/Framework.h"
@@ -17,9 +18,39 @@ Menu::~Menu()
 
 void Menu::update(GameBase* parent)
 {
-	if (Framework::instance().isKeyTriggered(' '))
+	int inputNum = 0;
+	char numChars[] = { '0', '1', '2', '3', '4'};
+
+	Framework f = Framework::instance();
+	for (int index = 0; index < 5; ++index)
 	{
-		parent->moveTo(GameBase::SEQ_STATE_SELECT);
+		if (f.isKeyTriggered(numChars[index]))
+		{
+			inputNum = index;
+		}
 	}
+	switch (inputNum)
+	{
+	case 1: // 重来
+		parent->state()->reset();
+		parent->moveTo(GameBase::SEQ_PLAY);
+		break;
+	case 2: // 关卡
+		parent->moveTo(GameBase::SEQ_STATE_SELECT);
+		break;
+	case 3: // 到主题
+		parent->moveTo(GameBase::SEQ_TITLE);
+		break;
+	case 4: // 继续
+		parent->moveTo(GameBase::SEQ_PLAY);
+		break;
+	default:
+		break;
+	}
+
+	// 先绘制游戏画面
+	parent->state()->draw();
+
+	// 在上面再绘制庆祝消息
 	m_pImage->draw();
 }

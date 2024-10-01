@@ -9,10 +9,13 @@ class State
 {
 public:
 	State(const char* stageData, int dataSize);
+	~State();
 
 	void draw() const;
 	void update(int dx, int dy, int dt);
 	bool hasCleared() const;
+
+	void reset(); //重置数据
 	
 private:
 	class Object; //声明
@@ -24,9 +27,12 @@ private:
 private:
 	int m_width;
 	int m_height;
-	Image* m_image;
+	Image* m_pImage;
 	Array2D<Object> m_objects;
 	int m_movetCount;
+
+	int m_dataSize;
+	char* m_pStageData;
 };
 
 #endif  // __STATE_H__

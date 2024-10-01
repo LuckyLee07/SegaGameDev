@@ -110,14 +110,27 @@ bool State::Object::isBlock() const
 
 
 State::State(const char* stageData, int dataSize)
-	: m_movetCount(0)
+	: m_movetCount(0), m_dataSize(dataSize)
 {
 	setSize(stageData, dataSize);
 	m_objects.init(m_width, m_height);
 
+	m_pStageData = new char[dataSize + 1];
+	for (int i = 0; i < dataSize; ++i)
+	{
+		m_pStageData[i] = stageData[i];
+	}
+	m_pStageData[dataSize] = '\0'; // NULL终止
+
 	this->initData(stageData, dataSize);
 
-	m_image = new Image("assets/nimotsuKunImage2.dds");
+	m_pImage = new Image("assets/nimotsuKunImage2.dds");
+}
+
+State::~State()
+{
+	SAFE_DELETE(m_pImage);
+	SAFE_DELETE_ARRAY(m_pStageData);
 }
 
 void State::setSize(const char* stageData, int dataSize)
@@ -188,7 +201,7 @@ void State::draw() const
 		for (int x = 0; x < m_width; ++x)
 		{
 			Object obj = m_objects(x, y);
-			obj.drawBackground(x, y, m_image);
+			obj.drawBackground(x, y, m_pImage);
 		}
 	}
 	// 其次绘制前景
@@ -197,7 +210,7 @@ void State::draw() const
 		for (int x = 0; x < m_width; ++x)
 		{
 			Object obj = m_objects(x, y);
-			obj.drawForeground(x, y, m_image, m_movetCount);
+			obj.drawForeground(x, y, m_pImage, m_movetCount);
 		}
 	}
 }
@@ -313,4 +326,9 @@ bool State::hasCleared() const
 		}
 	}
 	return true;
+}
+
+void State::reset()
+{
+	this->initData(m_pStageData, m_dataSize);
 }

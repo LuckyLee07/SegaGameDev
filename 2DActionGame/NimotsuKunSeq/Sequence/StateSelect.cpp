@@ -19,18 +19,19 @@ void StateSelect::update(Parent* parent)
 {
 	int stateId = 0;
 	char numChars[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+	Framework f = Framework::instance();
 	for (int index = 0; index < 10; ++index)
 	{
-		if (Framework::instance().isKeyTriggered(numChars[index]))
+		if (f.isKeyTriggered(numChars[index]))
 		{
 			stateId = index;
 		}
-		if (stateId > 0)
-		{
-			parent->setStateId(stateId);
-			parent->moveTo(Parent::SEQ_GAME);
-			break;
-		}
+	}
+	if (stateId > 0)
+	{
+		parent->setStateId(stateId);
+		parent->moveTo(Parent::SEQ_GAME);
 	}
 	m_pImage->draw();
 }
