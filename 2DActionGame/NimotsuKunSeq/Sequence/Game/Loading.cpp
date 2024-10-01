@@ -8,7 +8,7 @@ using namespace GameLib;
 
 Loading::Loading() : m_count(0), m_started(false), m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/dummy.dds");
+	m_pImage = new Image("assets/image/loading.dds");
 }
 
 Loading::~Loading()

@@ -9,7 +9,7 @@ using namespace GameLib;
 
 Clear::Clear() : m_count(0), m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/dummy.dds");
+	m_pImage = new Image("assets/image/clear.dds");
 }
 
 Clear::~Clear()

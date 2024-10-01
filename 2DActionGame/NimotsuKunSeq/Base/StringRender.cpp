@@ -35,6 +35,8 @@ void StringRender::destroy()
 
 void StringRender::draw(int x, int y, const char* str, unsigned color) const
 {
+	return; //屏蔽该函数
+
 	// 加个容错
 	if (str == nullptr) return;
 	

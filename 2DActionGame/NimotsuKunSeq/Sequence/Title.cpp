@@ -8,7 +8,7 @@ using namespace GameLib;
 
 Title::Title() : m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/dummy.dds");
+	m_pImage = new Image("assets/image/title.dds");
 }
 
 Title::~Title()

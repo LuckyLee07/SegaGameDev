@@ -9,7 +9,7 @@ using namespace GameLib;
 
 StateSelect::StateSelect() : m_pImage(nullptr), m_cursorPos(0)
 {
-	m_pImage = new Image("assets/dummy.dds");
+	m_pImage = new Image("assets/image/stageSelect.dds");
 	m_cursorPos = 1; // 默认选择第一关
 }
 
@@ -21,7 +21,24 @@ StateSelect::~StateSelect()
 void StateSelect::update(Parent* parent)
 {
 	const int MAX_STAGE = 9;
-	
+
+	int stateId = 0;
+	char numChars[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+	Framework f = Framework::instance();
+	for (int index = 0; index < 10; ++index)
+	{
+		if (f.isKeyTriggered(numChars[index]))
+		{
+			stateId = index;
+		}
+	}
+	if (stateId > 0)
+	{
+		parent->setStateId(stateId);
+		parent->moveTo(Parent::SEQ_GAME);
+	}
+	/*
 	Framework f = Framework::instance();
 	if (f.isKeyTriggered('w'))
 	{
@@ -40,7 +57,7 @@ void StateSelect::update(Parent* parent)
 		parent->setStateId(m_cursorPos);
 		parent->moveTo(Parent::SEQ_GAME);
 	}
-
+	*/
 	m_pImage->draw(); //绘制
 
 	// 输出文字
