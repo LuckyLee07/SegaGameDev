@@ -3,11 +3,14 @@
 #include "StateSelect.h"
 #include "Game/GameBase.h"
 #include "GameLib/Framework.h"
+#include "Base/StringRender.h"
 
 Parent::Parent() : m_pTitle(nullptr), 
 	m_pStateSelect(nullptr), m_pMainGame(nullptr),
 	m_next(SEQ_NONE), m_stateId(0)
 {
+	
+	StringRender::create("assets/fonts/font.dds");
 	m_pTitle = new Title();
 }
 

@@ -2,13 +2,15 @@
 #include "State.h"
 #include "Gamebase.h"
 #include "Base/Image.h"
+#include "Base/StringRender.h"
 #include "GameLib/Framework.h"
 
 using namespace GameLib;
 
-Menu::Menu() : m_pImage(nullptr)
+Menu::Menu() : m_pImage(nullptr), m_cursorPos(0)
 {
-	m_pImage = new Image("assets/menu.dds");
+	m_pImage = new Image("assets/dummy.dds");
+	m_cursorPos = 1; // é»˜è®¤é€‰1
 }
 
 Menu::~Menu()
@@ -18,39 +20,56 @@ Menu::~Menu()
 
 void Menu::update(GameBase* parent)
 {
-	int inputNum = 0;
-	char numChars[] = { '0', '1', '2', '3', '4'};
+	const int MAX_STAGE = 4;
 
 	Framework f = Framework::instance();
-	for (int index = 0; index < 5; ++index)
+	if (f.isKeyTriggered('w'))
 	{
-		if (f.isKeyTriggered(numChars[index]))
+		--m_cursorPos;
+		if (m_cursorPos <= 0)
+			m_cursorPos = MAX_STAGE;
+	}
+	else if (f.isKeyTriggered('s'))
+	{
+		++m_cursorPos;
+		if (m_cursorPos > MAX_STAGE)
+			m_cursorPos = 1;
+	}
+	else if (f.isKeyTriggered(' '))
+	{
+		switch (m_cursorPos)
 		{
-			inputNum = index;
+		case 1: // é‡æ¥
+			parent->state()->reset();
+			parent->moveTo(GameBase::SEQ_PLAY);
+			break;
+		case 2: // å…³å¡
+			parent->moveTo(GameBase::SEQ_STATE_SELECT);
+			break;
+		case 3: // åˆ°ä¸»é¢˜
+			parent->moveTo(GameBase::SEQ_TITLE);
+			break;
+		case 4: // ç»§ç»­
+			parent->moveTo(GameBase::SEQ_PLAY);
+			break;
+		default:
+			break;
 		}
 	}
-	switch (inputNum)
-	{
-	case 1: // ÖØÀ´
-		parent->state()->reset();
-		parent->moveTo(GameBase::SEQ_PLAY);
-		break;
-	case 2: // ¹Ø¿¨
-		parent->moveTo(GameBase::SEQ_STATE_SELECT);
-		break;
-	case 3: // µ½Ö÷Ìâ
-		parent->moveTo(GameBase::SEQ_TITLE);
-		break;
-	case 4: // ¼ÌÐø
-		parent->moveTo(GameBase::SEQ_PLAY);
-		break;
-	default:
-		break;
-	}
-
-	// ÏÈ»æÖÆÓÎÏ·»­Ãæ
+	
+	// å…ˆç»˜åˆ¶æ¸¸æˆç”»é¢
 	parent->state()->draw();
 
-	// ÔÚÉÏÃæÔÙ»æÖÆÇì×£ÏûÏ¢
+	// åœ¨ä¸Šé¢å†ç»˜åˆ¶åº†ç¥æ¶ˆæ¯
 	m_pImage->draw();
+
+	// ç»˜åˆ¶æ–‡å­—
+	StringRender* sRender = StringRender::instance();
+	sRender->draw(0, 0, "[MENU]");
+	sRender->draw(1, 1, "RETRY");
+	sRender->draw(1, 2, "GO TO STAGE SELECTION");
+	sRender->draw(1, 3, "GO TO TITLE");
+	sRender->draw(1, 4, "CONTINUE");
+	// å†™å…‰æ ‡
+	sRender->draw(0, m_cursorPos, ">");
 }

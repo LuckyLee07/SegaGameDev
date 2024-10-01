@@ -14,17 +14,17 @@ Play::~Play()
 {
 }
 
-// ÓÎÏ·±¾Ìå
+// æ¸¸æˆæœ¬ä½“
 void Play::update(GameBase* parent, float dt)
 {
 	State* gState = parent->state();
 
-	// Ö÷Ñ­»·Í¨¹Ø¼ì²â
+	// ä¸»å¾ªçŽ¯é€šå…³æ£€æµ‹
 	bool needClear = false;
 	if (gState->hasCleared())
 		needClear = true;
 
-	// »ñÈ¡ÊäÈë
+	// èŽ·å–è¾“å…¥
 	Framework f = Framework::instance();
 	if (!needClear)
 	{
@@ -44,15 +44,15 @@ void Play::update(GameBase* parent, float dt)
 			else if (f.isKeyOn('d')) 
 				dx += 1;
 
-			// ¸üÐÂ
+			// æ›´æ–°
 			gState->update(dx, dy, dt);
 		}
 
-		// »æÖÆ
+		// ç»˜åˆ¶
 		gState->draw();
 	}
 
-	if (needClear) // Çå³ýºó±¨¸æ
+	if (needClear) // æ¸…é™¤åŽæŠ¥å‘Š
 	{
 		parent->moveTo(GameBase::SEQ_CLEAR);
 	}

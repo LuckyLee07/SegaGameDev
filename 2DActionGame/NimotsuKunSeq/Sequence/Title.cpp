@@ -1,13 +1,14 @@
 #include "Title.h"
 #include "Parent.h"
 #include "Base/Image.h"
+#include "Base/StringRender.h"
 #include "GameLib/Framework.h"
 
 using namespace GameLib;
 
 Title::Title() : m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/title.dds");
+	m_pImage = new Image("assets/dummy.dds");
 }
 
 Title::~Title()
@@ -21,5 +22,8 @@ void Title::update(Parent* parent)
 	{
 		parent->moveTo(Parent::SEQ_STATE_SELECT);
 	}
-	m_pImage->draw();
+	m_pImage->draw(); //绘制
+	// 输出文字
+	StringRender::instance()->draw(0, 0, "TITLE: NimotsuKun");
+	StringRender::instance()->draw(0, 1, "PRESS SPACE KEY");
 }

@@ -14,6 +14,7 @@ public:
 
 private:
 	Image* m_pImage;
+	int m_cursorPos; //选择光标位置
 };
 
 #endif  // __STATE_SELECT_H__

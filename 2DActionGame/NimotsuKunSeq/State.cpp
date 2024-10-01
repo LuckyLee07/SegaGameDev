@@ -124,7 +124,7 @@ State::State(const char* stageData, int dataSize)
 
 	this->initData(stageData, dataSize);
 
-	m_pImage = new Image("assets/nimotsuKunImage2.dds");
+	m_pImage = new Image("assets/image/nimotsuKunImage2.dds");
 }
 
 State::~State()

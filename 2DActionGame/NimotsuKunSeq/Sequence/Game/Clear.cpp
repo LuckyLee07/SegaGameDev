@@ -2,13 +2,14 @@
 #include "GameBase.h"
 #include "State.h"
 #include "Base/Image.h"
+#include "Base/StringRender.h"
 #include "GameLib/Framework.h"
 
 using namespace GameLib;
 
 Clear::Clear() : m_count(0), m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/clear.dds");
+	m_pImage = new Image("assets/dummy.dds");
 }
 
 Clear::~Clear()
@@ -22,11 +23,14 @@ void Clear::update(GameBase* parent)
 	{
 		parent->moveTo(GameBase::SEQ_STATE_SELECT);
 	}
-	// ÏÈ»æÖÆÓÎÏ·»­Ãæ
+	// å…ˆç»˜åˆ¶æ¸¸æˆç”»é¢
 	parent->state()->draw();
 
-	// ÔÚÉÏÃæÔÙ»æÖÆÇì×£ÏûÏ¢
+	// åœ¨ä¸Šé¢å†ç»˜åˆ¶åº†ç¥æ¶ˆæ¯
 	m_pImage->draw();
+
+	//ç”»æ¸…æ¥šå’Œå­—æ¯
+	StringRender::instance()->draw(0, 0, "CLEAR!");
 
 	++m_count;
 }

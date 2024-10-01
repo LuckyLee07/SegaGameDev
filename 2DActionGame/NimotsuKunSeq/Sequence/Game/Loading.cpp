@@ -1,13 +1,14 @@
 #include "Loading.h"
 #include "GameBase.h"
 #include "Base/Image.h"
+#include "Base/StringRender.h"
 #include "GameLib/Framework.h"
 
 using namespace GameLib;
 
 Loading::Loading() : m_count(0), m_started(false), m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/loading.dds");
+	m_pImage = new Image("assets/dummy.dds");
 }
 
 Loading::~Loading()
@@ -28,6 +29,9 @@ void Loading::update(GameBase* parent)
 	}
 	
 	m_pImage->draw(); //绘制
+
+	// 输出文字
+	StringRender::instance()->draw(0, 0, "NOW LOADING...");
 
 	++m_count;
 }

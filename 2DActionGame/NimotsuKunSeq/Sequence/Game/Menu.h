@@ -14,6 +14,7 @@ public:
 
 private:
 	Image* m_pImage;
+	int m_cursorPos;
 };
 
 #endif  // __MENU_H__
