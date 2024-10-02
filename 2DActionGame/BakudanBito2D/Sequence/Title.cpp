@@ -8,7 +8,7 @@ using namespace GameLib;
 
 Title::Title() : m_pImage(nullptr)
 {
-	m_pImage = new Image("assets/image/title.dds");
+	m_pImage = new Image("assets/dummy.dds");
 }
 
 Title::~Title()
@@ -26,4 +26,7 @@ void Title::update(Parent* parent)
 	// 输出文字
 	StringRender::instance()->draw(0, 0, "TITLE: NimotsuKun", 0x00ffff);
 	StringRender::instance()->draw(0, 1, "PRESS SPACE KEY", 0xffff00);
+	
+	Framework::instance().drawDebugString(0, 0, "TITLE: NimotsuKun");
+	Framework::instance().drawDebugString(0, 1, "PRESS SPACE KEY");
 }
